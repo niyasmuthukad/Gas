@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Alert System Presentation</title>
+    <!-- Google Fonts: Merriweather (Headings) and Lato (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+/* 1. THE SETUP */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #eef2f9; /* Light blue-grey canvas */
+  display: grid;
+  margin: 0;
+  min-height: 100vh;
+  padding: 20px;
+  place-items: center;
+}
+
+q {
+    width: 5%;
+}
+
+.image-wrappero {
+  border-radius: 8px;
+  height: 20%;
+  overflow: hidden;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+.image-wrappero img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+.presentation-container {
+  aspect-ratio: 16 / 9;
+  background-color: #fdfdfd; /* White slide background */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 1280px;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* DYNAMIC FONT SIZING: JS will set this */
+  /* font-size: 10px; */
+}
+
+/* 1.1 SLIDE STYLING (INTERACTIVE) */
+.slide {
+  align-items: center;
+  background-color: #fdfdfd; /* White */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  padding: 4em; /* Use em for scalable padding */
+  position: absolute;
+  top: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 1.3 NAVIGATION CONTROLS */
+.nav-controls {
+  bottom: 3em;
+  position: absolute;
+  right: 4em;
+  z-index: 100;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+
+.nav-controls button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  color: #333;
+  cursor: pointer;
+  font-size: 1.8em;
+  height: 4.5em;
+  margin-left: 1em;
+  transition: all 0.2s ease;
+  width: 4.5em;
+}
+
+.nav-controls button:hover {
+  background-color: #007A7A; /* Accent Teal */
+  color: #fff;
+  border-color: #007A7A;
+}
+
+.nav-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+#slide-footer {
+  bottom: 4em;
+  color: #aaa;
+  font-family: 'Lato', sans-serif;
+  font-size: 1.4em;
+  left: 4em;
+  position: absolute;
+  z-index: 100;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+
+/* 1.4 THEATER MODE */
+.presentation-container.controls-hidden .nav-controls,
+.presentation-container.controls-hidden #slide-footer {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.presentation-container.controls-hidden {
+  cursor: none;
+}
+
+
+/* 2. CONSISTENT TYPOGRAPHY */
+
+/* Headings Font: Merriweather */
+.slide h1, .slide h2, .slide h3 {
+  color: #003366; /* Academic Blue */
+  font-weight: 700;
+  font-family: 'Merriweather', serif;
+  margin: 0;
+}
+
+/* Body Text Font: Lato */
+.slide p, .slide li, .slide .subtitle, .slide .author, .slide .number-label, .slide .legend li, .slide .chart-summary, .slide .bar .label, .slide th, .slide td, .slide .alternating-text-tile p, .slide .bleed-text-side p, .slide cite, .slide .qa-layout p, .slide .qa-layout .contact-info, .slide code {
+  color: #333;
+  font-family: 'Lato', sans-serif;
+}
+
+/* Consistent Font Sizes (Using em for scalability) */
+.slide h1 { font-size: 5.5em; } /* 55px at 10px base */
+
+.slide .slide-title {
+  font-size: 3.4em; /* 34px */
+  font-weight: 700;
+  margin-bottom: 2.5em; /* 25px */
+  text-align: left;
+  width: 100%;
+  color: #007A7A; /* Accent Teal */
+}
+
+.slide h3 {
+  font-size: 2.6em; /* 26px */
+  font-weight: 700;
+  margin-bottom: 1.5em;
+  color: #003366; /* Academic Blue */
+}
+
+/* Unified body text size */
+.slide p, .slide li, .slide .subtitle, .slide .author, .slide .legend li, .slide .chart-summary, .slide .bar .label, .slide th, .slide td, .slide .alternating-text-tile p, .slide .bleed-text-side p {
+  font-size: 1.8em; /* 18px */
+  line-height: 1.6;
+}
+
+.slide .subtitle {
+  font-weight: 400;
+  margin: 2em auto;
+  font-size: 2.2em; /* 22px */
+  color: #555;
+}
+
+.slide .author {
+  font-weight: 400;
+  margin-top: 1em;
+  font-size: 2.0em; /* 20px */
+  color: #333;
+}
+
+
+.slide .content-area {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 3. LAYOUT DEFINITIONS */
+
+.title-layout { text-align: center; }
+
+.two-column {
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4em;
+  width: 100%;
+  height: 100%;
+}
+.two-column.tiled { align-items: stretch; }
+.two-column.tiled > div {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  padding: 3em;
+  text-align: left;
+}
+.two-column.tiled h3 { margin-bottom: 1.5em; font-size: 2.4em; }
+.two-column.tiled p { font-size: 1.6em; }
+.two-column ul { list-style: disc; margin: 0; padding-left: 2.5em; }
+.two-column li { margin-bottom: 1.2em; }
+.image-wrapper {
+  border-radius: 8px;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  background-color: #f0f0f0;
+  border: 1px solid #eee;
+}
+.image-wrapper img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+.tiled-content {
+  align-items: stretch;
+  display: flex;
+  gap: 3em;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.tile {
+  align-items: center;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: flex-start;
+  padding: 2.5em;
+  text-align: center;
+}
+.tile .icon { color: #007A7A; font-size: 4em; margin-bottom: 2em; }
+.tile h3 { font-size: 2.2em; }
+.tile p { font-size: 1.6em; }
+
+.bullet-list { max-width: 90em; width: 100%; }
+.bullet-list ul { list-style: none; margin: 0; padding: 0; }
+.bullet-list li {
+  gap: 1.5em;
+  margin-bottom: 2em;
+  padding-left: 4em;
+  position: relative;
+  font-size: 1.8em;
+}
+.bullet-list i {
+  color: #007A7A; /* Accent Teal */
+  font-size: 2.2em;
+  left: 0;
+  margin-top: 0.25em;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 2.4em;
+}
+.bullet-list li strong { color: #003366; font-weight: 700; }
+
+.image-tile {
+  flex: 1;
+  text-align: center;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 2em;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
+.image-tile .image-wrapper {
+    height: 100%;
+    margin-bottom: 2em;
+    flex-grow: 1;
+}
+.image-tile p { font-size: 1.6em; }
+
+.table-layout { width: 100%; }
+.table-layout table { border-collapse: collapse; width: 100%; border: 1px solid #ccc; }
+.table-layout th, .table-layout td {
+  border-bottom: 1px solid #ddd;
+  padding: 1.4em 2em;
+  text-align: left;
+  font-size: 1.6em;
+}
+.table-layout th {
+  background-color: #003366; /* Academic Blue */
+  color: #ffffff;
+  font-size: 1.8em;
+  font-weight: 700;
+  font-family: 'Merriweather', serif;
+}
+.table-layout tr:last-child td { border-bottom: none; }
+
+.timeline-layout {
+  align-items: stretch;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+.timeline-layout .timeline-line {
+  background-color: #ccc;
+  height: 4px;
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-2px);
+  width: 100%;
+  z-index: 0;
+}
+.timeline-item { position: relative; text-align: center; width: 23%; }
+.timeline-item::after {
+  background-color: #fdfdfd; /* White */
+  border-radius: 50%;
+  border: 4px solid #007A7A; /* Accent Teal */
+  content: '';
+  height: 2em;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2em;
+  z-index: 1;
+}
+.timeline-item .content-wrapper { left: 0; position: absolute; width: 100%; }
+.timeline-item:nth-child(odd) .content-wrapper { bottom: 50%; margin-bottom: 2.5em; }
+.timeline-item:nth-child(even) .content-wrapper { margin-top: 2.5em; top: 50%; }
+.timeline-item h3 { color: #003366; font-size: 2.2em; }
+.timeline-item p { font-size: 1.6em; }
+
+/* Bleed Image Layout */
+.slide.bleed-image-layout {
+  align-items: start;
+  display: grid;
+  gap: 4em;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+}
+.slide.bleed-image-layout > .content-container { padding: 4em 0 4em 4em; }
+.slide.bleed-image-layout > .image-container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  background-color: #fff;
+}
+.slide.bleed-image-layout img.bleed-image-side {
+  border-radius: 0 8px 8px 0;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  width: 100%;
+}
+.slide.bleed-image-layout .bleed-text-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%; /* Added */
+}
+.slide.bleed-image-layout .bleed-text-side p {
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 1em;
+  font-size: 1.8em;
+}
+.slide.bleed-image-layout .bleed-text-side ul { padding-left: 2.5em; }
+.slide.bleed-image-layout .bleed-text-side li { font-size: 1.8em; }
+
+/* Q&A Layout */
+.qa-layout { text-align: center; width: 100%; align-self: center; }
+.qa-layout h2 {
+  font-size: 7em;
+  margin-bottom: 0.25em;
+  color: #003366;
+}
+.qa-layout p { font-size: 2em; color: #555; }
+.qa-layout .contact-info {
+  color: #555;
+  font-size: 1.8em;
+  margin-top: 4em;
+}
+
+/* 4. NEW LAYOUTS */
+
+/* Code Layout */
+.code-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4em;
+  width: 100%;
+  align-items: stretch;
+  height: 100%;
+}
+.code-layout .text-content {
+  padding-right: 2em;
+}
+.code-layout .code-block {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 2em;
+  height: 100%;
+  overflow-y: auto;
+  font-size: 1.3em;
+}
+.code-layout pre {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+}
+/* Simple Syntax Highlighting (Light Theme) */
+.code-comment { color: #6a737d; }
+.code-keyword { color: #d73a49; }
+.code-function { color: #005cc5; }
+.code-type { color: #032f62; }
+.code-string { color: #0a3069; }
+.code-number { color: #d73a49; }
+
+/* Circuit Diagram Layout */
+.circuit-diagram-layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 4em;
+    width: 100%;
+    align-items: stretch;
+    height: 100%;
+}
+.circuit-diagram-layout .diagram-placeholder {
+    background-color: #fff;
+    border-radius: 8px;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #333;
+    font-size: 1.8em;
+    font-weight: 700;
+    padding: 1em;
+    border: 1px solid #eee;
+}
+.circuit-diagram-layout .diagram-placeholder img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.circuit-diagram-layout ul {
+    list-style: none;
+    padding-left: 0;
+}
+.circuit-diagram-layout li {
+    font-size: 1.6em;
+    margin-bottom: 1.2em;
+}
+.circuit-diagram-layout li code {
+    background-color: #eef2f9;
+    border-radius: 4px;
+    padding: 0.3em 0.6em;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.5em;
+    color: #003366;
+}
+
+/* Results Graph Layout */
+.results-graph-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4em;
+    width: 100%;
+    align-items: stretch;
+    height: 100%;
+}
+.results-graph-layout .graph-placeholder {
+    background-color: #fff;
+    border-radius: 8px;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 2em;
+    border: 1px solid #eee;
+}
+.results-graph-layout .graph-placeholder img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.results-graph-layout ul { padding-left: 2.5em; }
+.results-graph-layout li { font-size: 1.8em; margin-bottom: 1em; }
+
+/* Demo Layout */
+.demo-layout {
+    text-align: center;
+}
+.demo-layout .demo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6em;
+    margin-top: 4em;
+}
+.demo-layout .qr-placeholder {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2em;
+    height: 25em;
+    width: 25em;
+    display: grid;
+    place-items: center;
+    border: 1px solid #ddd;
+}
+.demo-layout .qr-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.demo-layout .demo-text h3 {
+    font-size: 3.6em;
+    color: #003366;
+    margin-bottom: 1em;
+}
+.demo-layout .demo-text p {
+    font-size: 2.2em;
+    margin-top: 0;
+    color: #333;
+}
+.demo-layout .demo-text code {
+    background-color: #eef2f9;
+    border-radius: 4px;
+    padding: 0.25em 0.5em;
+    font-size: 1em; /* 2.2em * 1.0 = 2.2em */
+    font-family: 'Courier New', Courier, monospace;
+    color: #003366;
+}
+
+/* Diagram Layout */
+.diagram-layout {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.diagram-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.diagram-node .icon {
+    font-size: 6em;
+    color: #003366;
+}
+.diagram-node h3 {
+    font-size: 2em;
+    margin-top: 1em;
+}
+.diagram-arrow {
+    font-size: 6em;
+    color: #007A7A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.diagram-arrow code {
+    font-size: 0.3em;
+    background: #eef2f9;
+    padding: 0.5em;
+    border-radius: 4px;
+    color: #333;
+}
+
+/* Hardware Grid Layout */
+.hardware-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2em;
+    width: 100%;
+    height: 100%;
+}
+.hardware-grid .image-tile {
+    padding: 1.5em;
+}
+.hardware-grid .image-tile .image-wrapper {
+    height: 100%;
+}
+.hardware-grid .image-tile p {
+    font-size: 1.5em;
+}
+
+/* Full Code Layout */
+.full-code-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.full-code-layout .code-block {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 2em;
+    height: 100%; /* Take remaining height */
+    overflow: auto; /* Allow scrolling */
+    font-size: 1.0em; /* Smallest font for full code */
+    flex-grow: 1;
+}
+.full-code-layout pre {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="presentation-container" id="presentation-container">
+
+    <!-- Slide 1: Title_Slide -->
+    <div class="slide active" id="slide-1">
+        <div class="title-layout">
+            <h1>Practical IoT Gas-Leak Detection System</h1>
+            <p class="subtitle">IoT Project Presentation</p>
+            <p class="author">By; Muhammed Niyas, Kumaresh V</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Project Specifics -->
+    <div class="slide" id="slide-2">
+        <h2 class="slide-title">Project Specifics</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3>Software & Cloud</h3>
+                    <ul>
+                        <li><b>WiFi SSID:</b> <code>MN Muthukad</code></li>
+                        <li><b>Bot Token:</b> <code>8409...pvqo0</code></li>
+                        <li><b>Chat ID:</b> <code>5757378443</code></li>
+                        <li><b>Libraries:</b>
+                            <ul>
+                                <li>ESP8266WiFi.h</li>
+                                <li>UniversalTelegramBot.h</li>
+                                <li>LiquidCrystal_I2C.h</li>
+                                <li>EEPROM.h</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Hardware</h3>
+                    <ul>
+                        <li><b>Controller:</b> ESP8266 (NodeMCU)</li>
+                        <li><b>Sensor:</b> MQ-6 Gas Sensor</li>
+                        <li><b>Display:</b> 16x2 I2C LCD</li>
+                        <li><b>Alerts:</b> Active Buzzer & 5mm LED</li>
+                        <li><b>Storage:</b> Internal EEPROM</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: The "What If?" -->
+    <div class="slide" id="slide-3">
+        <h2 class="slide-title">The Problem: A Silent Threat</h2>
+        <div class="content-area">
+             <div class="two-column">
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                    <h3>The "What If?"</h3>
+                    <p>Traditional gas detectors are local-only. A buzzer is useless if no one is home to hear it.</p>
+                    <p>The core problem is not just detection, but the **failure of notification**. A leak at 3 AM or when you're at work is a silent catastrophe in the making.</p>
+                </div>
+                <div>
+                    <div class="image-wrapper">
+                         <img src="IMG/KITCH.png" alt="A modern, empty kitchen">
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Project Objectives -->
+    <div class="slide" id="slide-4">
+        <h2 class="slide-title">Project Objectives: Building a "Smart" Detector</h2>
+        <div class="content-area">
+            <div class="two-column tiled">
+                <div>
+                    <h3><i class="fa-solid fa-wifi"></i> Connected</h3>
+                    <p>Send instant, remote notifications to the user via Telegram, ensuring they are alerted anywhere, anytime.</p>
+                </div>
+                 <div>
+                    <h3><i class="fa-solid fa-gears"></i> Configurable</h3>
+                    <p>Host a local web server, allowing the user to view the status and set a custom alert threshold from their phone.</p>
+                </div>
+                 <div>
+                    <h3><i class="fa-solid fa-sd-card"></i> Robust</h3>
+                    <p>Save the user's custom threshold to non-volatile EEPROM memory, so settings are never lost after a power failure.</p>
+                </div>
+                 <div>
+                    <h3><i class="fa-solid fa-puzzle-piece"></i> Modular</h3>
+                    <p>Design a system that can be easily adapted to detect different gases (LPG, CNG, H2) simply by swapping the MQ sensor.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: System Architecture -->
+    <div class="slide" id="slide-5">
+        <h2 class="slide-title">System Architecture</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                    <h3>1. Input (Sense)</h3>
+                    <p>An MQ-Series analog sensor (e.g., MQ-6) detects gas concentration. The value is read by the ESP8266's ADC.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-microchip"></i></div>
+                    <h3>2. Process (Think)</h3>
+                    <p>The ESP8266 runs all logic:
+                        <br>- Gets stable sensor value (averaging)
+                        <br>- Checks value against threshold
+                        <br>- Hosts web server & handles UI
+                    </p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-bell-concierge"></i></div>
+                    <h3>3. Output (Act)</h3>
+                    <p>Triggers a multi-layered alert:
+                        <br>- **Local:** Buzzer + LED + LCD
+                        <br>- **Remote:** Telegram Notification
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 6: Hardware Components -->
+    <div class="slide" id="slide-6">
+        <h2 class="slide-title">Hardware Components</h2>
+        <div class="content-area">
+            <div class="hardware-grid">
+                <div class="image-tile">
+                    <div class="image-wrappero"><img src="IMG/ESP.jpg" alt="ESP8266 NodeMCU v2"></div>
+                    <p>ESP8266 NodeMCU</p>
+                    <div class="image-wrappero"><img src="IMG/BUS.webp" alt="5V Active Buzzer Module"></div>
+                    <p>Active Buzzer</p>
+                </div>
+                <div class="image-tile">
+                    <div class="image-wrappero"><img src="IMG/MQ.webp" alt="MQ-6 gas sensor module"></div>
+                    <p>MQ-6 Gas Sensor</p>
+                    <div class="image-wrappero"><img src="IMG/LED.webp" alt="Red 5mm LED"></div>
+                    <p>5mm LED</p>
+                </div>
+                <div class="image-tile">
+                    <div class="image-wrappero"><img src="IMG/I2C.jpg" alt="16x2 I2C LCD Display blue"></div>
+                    <p>I2C LCD Display</p>
+                    <div class="image-wrappero"><img src="IMG/char.png" alt="Breadboard and Jumper Wires"></div>
+                    <p>External Power Supply Module</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Circuit Diagram -->
+    <div class="slide" id="slide-7">
+        <h2 class="slide-title">Circuit Diagram</h2>
+        <div class="content-area">
+            <div class="circuit-diagram-layout">
+                <div class="diagram-placeholder">
+                    <img src="IMG/WhatsApp Image 2025-10-07 at 13.32.44_92419681.jpg" alt="Fritzing circuit diagram for ESP8266 MQ-6 LCD buzzer">
+                </div>
+                <div>
+                    <h3>Key Connections</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-right-long"></i> <strong>LCD (I2C):</strong>
+                            <br><code>SDA</code> &rarr; <code>D2 (GPIO4)</code>
+                            <br><code>SCL</code> &rarr; <code>D1 (GPIO5)</code>
+                        </li>
+                        <li><i class="fa-solid fa-right-long"></i> <strong>MQ-6 Sensor:</strong>
+                            <br><code>AOUT</code> &rarr; <code>A0 (ADC)</code>
+                        </li>
+                        <li><i class="fa-solid fa-right-long"></i> <strong>Local Alarm:</strong>
+                            <br><code>Buzzer</code> &rarr; <code>D6 (GPIO12)</code>
+                            <br><code>LED</code> &rarr; <code>D5 (GPIO14)</code>
+                        </li>
+                        <li><i class="fa-solid fa-right-long"></i> <strong>Power:</strong>
+                            <br>All components share <code>5V (VIN)</code> and <code>GND</code>.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Final Prototype (NEW) -->
+    <div class="slide bleed-image-layout" id="slide-8">
+        <!-- Left Side: Text Content -->
+        <div class="content-container">
+            <h2 class="slide-title">Final Prototype</h2>
+            <div class="content-area">
+                <div class="bleed-text-side">
+                    <h3>Assembled System</h3>
+                    <p>This is the fully assembled prototype on a PC board, integrating all components.</p>
+                    <ul>
+                        <li><strong>Controller:</strong> ESP8266 NodeMCU</li>
+                        <li><strong>Sensor:</strong> MQ-6 Gas Sensor</li>
+                        <li><strong>Display:</strong> 16x2 I2C LCD</li>
+                        <li><strong>Alerts:</strong> Active Buzzer & LED</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Right Side: Image -->
+        <div class="image-container">
+            <img class="bleed-image-side" src="IMG/D.jpg" alt="Photo of the final breadboard prototype">
+        </div>
+    </div>
+
+    <!-- Slide 9: Component Analysis: MQ-6 Sensor -->
+    <div class="slide bleed-image-layout" id="slide-9">
+        <!-- Left Side: Text Content -->
+        <div class="content-container">
+            <h2 class="slide-title">Component Analysis: MQ-6 Sensor</h2>
+            <div class="content-area">
+                <div class="bleed-text-side">
+                    <h3>Working Principle</h3>
+                    <p>The sensor's core is a Tin Dioxide (SnO₂) layer. Its resistance changes based on the air.</p>
+                    <ul>
+                        <li><strong>In Clean Air:</strong> The sensor's resistance is VERY HIGH. This results in a high analog voltage reading (e.g., 800).</li>
+                        <li><strong>In Gassed Air:</strong> Gas reacts with the sensor, causing its resistance to DROP. This results in a low analog voltage (e.g., 550).</li>
+                    </ul>
+                    <h3>The Code Logic</h3>
+                    <p>This is why the code's logic is `if (sensorValue < gasThreshold)`. The alarm triggers when the voltage *drops* below the safe threshold.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Right Side: Image -->
+        <div class="image-container">
+            <img class="bleed-image-side" src="IMG/SENSE.png" alt="MQ-6 sensor internal structure diagram">
+        </div>
+    </div>
+
+    <!-- Slide 10: Methodology: Software Flow -->
+    <div class="slide" id="slide-10">
+        <h2 class="slide-title">Methodology: Software Flow</h2>
+        <div class="content-area">
+            <div class="timeline-layout">
+                <div class="timeline-line"></div>
+                <div class="timeline-item">
+                    <div class="content-wrapper">
+                        <h3>Boot & Load</h3>
+                        <p>System starts. Loads the saved `gasThreshold` from EEPROM memory.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content-wrapper">
+                        <h3>Connect</h3>
+                        <p>Connects to WiFi. Starts the web server and displays the IP address on the LCD.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content-wrapper">
+                        <h3>Monitor</h3>
+                        <p>Enters main loop. Gets a stable, averaged sensor value (20-sample average).</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content-wrapper">
+                        <h3>Check Logic</h3>
+                        <p>Compares value: `if (sensorValue < threshold)`. If true, calls `triggerAlert()`. If false, calls `resetAlert()`.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Full Project Code -->
+    <div class="slide full-code-layout" id="slide-11">
+        <h2 class="slide-title">Full Project Code</h2>
+        <div class="code-block">
+<pre><code>
+
+<span class="code-comment">// --- LIBRARIES ---</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;ESP8266WiFi.h&gt;</span>          <span class="code-comment">// For WiFi connectivity</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;ESP8266WebServer.h&gt;</span>     <span class="code-comment">// To host the web page</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;WiFiClientSecure.h&gt;</span>     <span class="code-comment">// For secure HTTPS (Telegram)</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;UniversalTelegramBot.h&gt;</span> <span class="code-comment">// For the Telegram bot</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;Wire.h&gt;</span>                 <span class="code-comment">// For I2C communication</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;LiquidCrystal_I2C.h&gt;</span>    <span class="code-comment">// For the LCD display</span>
+#<span class="code-keyword">include</span> <span class="code-string">&lt;EEPROM.h&gt;</span>               <span class="code-comment">// To save the threshold</span>
+
+<span class="code-comment">// --- USER CONFIGURATION ---</span>
+
+<span class="code-comment">// 1. WiFi Credentials</span>
+<span class="code-type">const</span> <span class="code-type">char</span>* ssid = <span class="code-string">"MN Muthukad"</span>;      <span class="code-comment">// Your WiFi SSID</span>
+<span class="code-type">const</span> <span class="code-type">char</span>* password = <span class="code-string">"1234567890"</span>;   <span class="code-comment">// Your WiFi Password</span>
+
+<span class="code-comment">// 2. Telegram Bot Credentials</span>
+#<span class="code-keyword">define</span> BOTtoken <span class="code-string">"8409507069:AAHx3QE0RvvSr_6mBi_RcA6ScQFnX3pvqo0"</span> <span class="code-comment">// Your Bot Token</span>
+#<span class="code-keyword">define</span> CHAT_ID <span class="code-string">"5757378443"</span>             <span class="code-comment">// Your Chat ID</span>
+
+<span class="code-comment">// --- HARDWARE PINS ---</span>
+<span class="code-comment">// (Using NodeMCU pin definitions)</span>
+#<span class="code-keyword">define</span> SENSOR_PIN  A0    <span class="code-comment">// Analog pin for MQ sensor</span>
+#<span class="code-keyword">define</span> LED_PIN     D5    <span class="code-comment">// (GPIO 14) Digital pin for LED</span>
+#<span class="code-keyword">define</span> BUZZER_PIN  D6    <span class="code-comment">// (GPIO 12) Digital pin for Buzzer</span>
+
+<span class="code-comment">// --- I2C LCD ---</span>
+<span class="code-comment">// (Address 0x27 is common, but 0x3F is also possible)</span>
+LiquidCrystal_I2C lcd(<span class="code-number">0x27</span>, <span class="code-number">16</span>, <span class="code-number">2</span>);  
+
+<span class="code-comment">// --- WEB SERVER ---</span>
+ESP8266WebServer server(<span class="code-number">80</span>); <span class="code-comment">// Server on port 80</span>
+
+<span class="code-comment">// --- TELEGRAM BOT ---</span>
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOTtoken, client);
+
+<span class="code-comment">// --- GLOBAL VARIABLES ---</span>
+
+<span class="code-comment">// Threshold</span>
+<span class="code-type">int</span> gasThreshold;               <span class="code-comment">// Alert threshold (loaded from EEPROM)</span>
+<span class="code-type">int</span> eepromAddress = <span class="code-number">0</span>;          <span class="code-comment">// EEPROM address to store the threshold</span>
+
+<span class="code-comment">// Sensor Timing</span>
+<span class="code-type">unsigned</span> <span class="code-type">long</span> lastCheckTime = <span class="code-number">0</span>;
+<span class="code-type">const</span> <span class="code-type">long</span> checkInterval = <span class="code-number">1000</span>; <span class="code-comment">// Check sensor every 1 second</span>
+
+<span class="code-comment">// Telegram Spam Protection</span>
+<span class="code-type">unsigned</span> <span class="code-type">long</span> lastTelegramTime = <span class="code-number">0</span>;
+<span class="code-type">const</span> <span class="code-type">long</span> telegramInterval = <span class="code-number">300000</span>; <span class="code-comment">// 5 minutes (300,000 ms)</span>
+
+<span class="code-comment">// State</span>
+<span class="code-type">bool</span> alertActive = <span class="code-keyword">false</span>;
+
+<span class="code-comment">// --- INITIALIZATION ---</span>
+
+<span class="code-type">void</span> <span class="code-function">setup</span>() {
+  Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+  
+  <span class="code-comment">// 1. Hardware Init</span>
+  <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);
+  <span class="code-function">pinMode</span>(BUZZER_PIN, OUTPUT);
+  <span class="code-function">digitalWrite</span>(LED_PIN, LOW);
+  <span class="code-function">digitalWrite</span>(BUZZER_PIN, LOW);
+  
+  <span class="code-comment">// 2. LCD Init</span>
+  Wire.<span class="code-function">begin</span>(); <span class="code-comment">// (SDA=D2/GPIO4, SCL=D1/GPIO5)</span>
+  lcd.<span class="code-function">begin</span>();
+  lcd.<span class="code-function">backlight</span>();
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">0</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"System Booting..."</span>);
+  
+  <span class="code-comment">// 3. EEPROM Init</span>
+  EEPROM.<span class="code-function">begin</span>(<span class="code-number">4</span>); <span class="code-comment">// Allocate 4 bytes for one integer</span>
+  
+  <span class="code-comment">// Load the threshold from EEPROM</span>
+  EEPROM.<span class="code-function">get</span>(eepromAddress, gasThreshold);
+  Serial.<span class="code-function">print</span>(<span class="code-string">"Loaded threshold from EEPROM: "</span>);
+  Serial.<span class="code-function">println</span>(gasThreshold);
+
+  <span class="code-comment">// Check if EEPROM value is bad (first boot or corrupt)</span>
+  <span class="code-keyword">if</span> (gasThreshold <= <span class="code-number">0</span> || gasThreshold > <span class="code-number">1024</span>) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Invalid threshold. Setting to default (690)."</span>);
+    lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+    lcd.<span class="code-function">print</span>(<span class="code-string">"Setting default"</span>);
+    gasThreshold = <span class="code-number">690</span>; <span class="code-comment">// Set a default value</span>
+    EEPROM.<span class="code-function">put</span>(eepromAddress, gasThreshold);
+    EEPROM.<span class="code-function">commit</span>(); <span class="code-comment">// Save to EEPROM</span>
+  }
+  
+  <span class="code-comment">// 4. WiFi Connection</span>
+  lcd.<span class="code-function">clear</span>();
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Connecting WiFi..."</span>);
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+  lcd.<span class="code-function">print</span>(ssid);
+  
+  WiFi.<span class="code-function">begin</span>(ssid, password);
+  <span class="code-keyword">while</span> (WiFi.<span class="code-function">status</span>() != WL_CONNECTED) {
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"."</span>);
+  }
+  Serial.<span class="code-function">println</span>(<span class="code-string">"\nWiFi Connected!"</span>);
+  
+  <span class="code-comment">// 5. Display IP</span>
+  lcd.<span class="code-function">clear</span>();
+  lcd.<span class="code-function">print</span>(<span class="code-string">"WiFi Connected!"</span>);
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+  lcd.<span class="code-function">print</span>(WiFi.<span class="code-function">localIP</span>());
+  Serial.<span class="code-function">print</span>(<span class="code-string">"IP Address: "</span>);
+  Serial.<span class="code-function">println</span>(WiFi.<span class="code-function">localIP</span>());
+  <span class="code-function">delay</span>(<span class="code-number">4000</span>); <span class="code-comment">// Show IP for 4 seconds</span>
+
+  <span class="code-comment">// 6. Sensor Warm-up</span>
+  lcd.<span class="code-function">clear</span>();
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Sensor Warming Up"</span>);
+  Serial.<span class="code-function">println</span>(<span class="code-string">"Sensor warming up..."</span>);
+  <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">15</span>; i++) {
+    lcd.<span class="code-function">setCursor</span>(i, <span class="code-number">1</span>);
+    lcd.<span class="code-function">print</span>(<span class="code-string">"."</span>);
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+  }
+  
+  <span class="code-comment">// 7. Web Server Init</span>
+  server.<span class="code-function">on</span>(<span class="code-string">"/"</span>, HTTP_GET, handleRoot);
+  server.<span class="code-function">on</span>(<span class="code-string">"/set"</span>, HTTP_POST, handleSetThreshold);
+  server.<span class="code-function">begin</span>();
+  
+  <span class="code-comment">// 8. Security (for Telegram API)</span>
+  client.<span class="code-function">setInsecure</span>();
+
+  <span class="code-comment">// 9. Ready</span>
+  lcd.<span class="code-function">clear</span>();
+  lcd.<span class="code-function">print</span>(<span class="code-string">"System Ready"</span>);
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Threshold: "</span> + <span class="code-function">String</span>(gasThreshold));
+  Serial.<span class="code-function">println</span>(<span class="code-string">"System Ready."</span>);
+}
+
+<span class="code-comment">// --- MAIN LOOP ---</span>
+
+<span class="code-type">void</span> <span class="code-function">loop</span>() {
+  server.<span class="code-function">handleClient</span>(); 
+  
+  <span class="code-keyword">if</span> (<span class="code-function">millis</span>() - lastCheckTime > checkInterval) {
+    lastCheckTime = <span class="code-function">millis</span>();
+    
+    <span class="code-type">int</span> sensorValue = <span class="code-function">getStableSensorValue</span>();
+    
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Sensor: "</span>);
+    Serial.<span class="code-function">print</span>(sensorValue);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | Threshold: "</span>);
+    Serial.<span class="code-function">println</span>(gasThreshold);
+
+    <span class="code-keyword">if</span> (!alertActive) {
+      lcd.<span class="code-function">clear</span>();
+      lcd.<span class="code-function">print</span>(<span class="code-string">"Sensor: "</span> + <span class="code-function">String</span>(sensorValue));
+      lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+      lcd.<span class="code-function">print</span>(<span class="code-string">"Threshold: "</span> + <span class="code-function">String</span>(gasThreshold));
+    }
+    
+    <span class="code-keyword">if</span> (sensorValue < gasThreshold) {
+      <span class="code-function">triggerAlert</span>(sensorValue);
+      alertActive = <span class="code-keyword">true</span>;
+    } <span class="code-keyword">else</span> {
+      <span class="code-function">resetAlert</span>();
+      alertActive = <span class="code-keyword">false</span>;
+    }
+  }
+}
+
+<span class="code-comment">// --- ALERT FUNCTIONS ---</span>
+
+<span class="code-type">void</span> <span class="code-function">triggerAlert</span>(<span class="code-type">int</span> val) {
+  <span class="code-function">digitalWrite</span>(LED_PIN, HIGH);
+  <span class="code-function">digitalWrite</span>(BUZZER_PIN, HIGH);
+  
+  lcd.<span class="code-function">clear</span>();
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">0</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"! GAS DETECTED !"</span>);
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Value: "</span> + <span class="code-function">String</span>(val));
+  
+  <span class="code-keyword">if</span> (<span class="code-function">millis</span>() - lastTelegramTime > telegramInterval || lastTelegramTime == <span class="code-number">0</span>) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Sending Telegram message..."</span>);
+    <span class="code-type">String</span> message = <span class="code-string">"GAS LEAK ALERT!\n\nSensor Value: "</span> + <span class="code-function">String</span>(val) + <span class="code-string">"\nThreshold: "</span> + <span class="code-function">String</span>(gasThreshold);
+    bot.<span class="code-function">sendMessage</span>(CHAT_ID, message, <span class="code-string">""</span>);
+    lastTelegramTime = <span class="code-function">millis</span>();
+  }
+}
+
+<span class="code-type">void</span> <span class="code-function">resetAlert</span>() {
+  <span class="code-function">digitalWrite</span>(LED_PIN, LOW);
+  <span class="code-function">digitalWrite</span>(BUZZER_PIN, LOW);
+  
+  <span class="code-keyword">if</span> (alertActive) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Sending All Clear message..."</span>);
+    <span class="code-type">String</span> message = <span class="code-string">"All Clear: Gas level is now safe.\n\nSensor Value: "</span> + <span class="code-function">String</span>(<span class="code-function">getStableSensorValue</span>());
+    bot.<span class="code-function">sendMessage</span>(CHAT_ID, message, <span class="code-string">""</span>);
+    lastTelegramTime = <span class="code-number">0</span>;
+  }
+}
+
+<span class="code-comment">// --- SENSOR STABILIZATION ---</span>
+
+<span class="code-type">int</span> <span class="code-function">getStableSensorValue</span>() {
+  <span class="code-type">int</span> numReadings = <span class="code-number">20</span>;
+  <span class="code-type">long</span> total = <span class="code-number">0</span>;
+  <span class="code-keyword">for</span> (<span class="code-type">int</span> i = <span class="code-number">0</span>; i < numReadings; i++) {
+    total += <span class="code-function">analogRead</span>(SENSOR_PIN);
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);
+  }
+  <span class="code-keyword">return</span> total / numReadings;
+}
+
+<span class="code-comment">// --- WEB SERVER HANDLERS ---</span>
+
+<span class="code-type">void</span> <span class="code-function">handleRoot</span>() {
+  <span class="code-type">int</span> currentVal = <span class="code-function">getStableSensorValue</span>();
+  <span class="code-type">String</span> html = <span class="code-string">"&lt;!DOCTYPE html&gt;&lt;html lang='en'&gt;&lt;head&gt;"</span>;
+  html += <span class="code-string">"&lt;meta charset='UTF-8'&gt;&lt;meta name='viewport' content='width=device-width, initial-scale=1.0'&gt;"</span>;
+  html += <span class="code-string">"&lt;title&gt;ESP8266 Gas Alert&lt;/title&gt;"</span>;
+  html += <span class="code-string">"&lt;style&gt;"</span>;
+  html += <span class="code-string">"body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; justify-content: center; }"</span>;
+  html += <span class="code-string">".container { background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 25px; width: 320px; }"</span>;
+  html += <span class="code-string">"h1 { color: #333; text-align: center; margin-top: 0; }"</span>;
+  html += <span class="code-string">".status { padding: 15px; border-radius: 5px; text-align: center; font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }"</span>;
+  <span class="code-keyword">if</span> (alertActive) {
+    html += <span class="code-string">".status.alert { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }"</span>;
+  } <span class="code-keyword">else</span> {
+    html += <span class="code-string">".status.safe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }"</span>;
+  }
+  html += <span class="code-string">".info p { font-size: 1.1em; color: #555; margin: 10px 0; }"</span>;
+  html += <span class="code-string">".info p span { font-weight: bold; color: #000; float: right; }"</span>;
+  html += <span class="code-string">"form { margin-top: 20px; }"</span>;
+  html += <span class="code-string">"label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }"</span>;
+  html += <span class="code-string">"input[type='number'] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }"</span>;
+  html += <span class="code-string">"input[type='submit'] { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; margin-top: 15px; }"</span>;
+  html += <span class="code-string">"input[type='submit']:hover { background-color: #0056b3; }"</span>;
+  html += <span class="code-string">"&lt;/style&gt;"</span>;
+  html += <span class="code-string">"&lt;/head&gt;&lt;body&gt;"</span>;
+  html += <span class="code-string">"&lt;div class='container'&gt;"</span>;
+  html += <span class="code-string">"&lt;h1&gt;Gas Alert System&lt;/h1&gt;"</span>;
+  <span class="code-keyword">if</span> (alertActive) {
+    html += <span class="code-string">"&lt;div class='status alert'&gt;Status: GAS DETECTED!&lt;/div&gt;"</span>;
+  } <span class="code-keyword">else</span> {
+    html += <span class="code-string">"&lt;div class='status safe'&gt;Status: All Clear&lt;/div&gt;"</span>;
+  }
+  html += <span class="code-string">"&lt;div class='info'&gt;"</span>;
+  html += <span class="code-string">"&lt;p&gt;Current Value: &lt;span&gt;"</span> + <span class="code-function">String</span>(currentVal) + <span class="code-string">"&lt;/span&gt;&lt;/p&gt;"</span>;
+  html += <span class="code-string">"&lt;p&gt;Alert Threshold: &lt;span&gt;"</span> + <span class="code-function">String</span>(gasThreshold) + <span class="code-string">"&lt;/span&gt;&lt;/p&gt;"</span>;
+  html += <span class="code-string">"&lt;/div&gt;"</span>;
+  html += <span class="code-string">"&lt;form action='/set' method='POST'&gt;"</span>;
+  html += <span class="code-string">"&lt;label for='threshold'&gt;Set New Threshold (0-1023):&lt;/label&gt;"</span>;
+  html += <span class="code-string">"&lt;input type='number' id='threshold' name='threshold' value='"</span> + <span class="code-function">String</span>(gasThreshold) + <span class="code-string">"' min='0' max='1023' required&gt;"</span>;
+  html += <span class="code-string">"&lt;input type='submit' value='Set Threshold'&gt;"</span>;
+  html += <span class="code-string">"&lt;/form&gt;"</span>;
+  html += <span class="code-string">"&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</span>;
+  
+  server.<span class="code-function">send</span>(<span class="code-number">200</span>, <span class="code-string">"text/html"</span>, html);
+}
+
+<span class="code-type">void</span> <span class="code-function">handleSetThreshold</span>() {
+  <span class="code-keyword">if</span> (server.<span class="code-function">hasArg</span>(<span class="code-string">"threshold"</span>)) {
+    <span class="code-type">String</span> newThresholdStr = server.<span class="code-function">arg</span>(<span class="code-string">"threshold"</span>);
+    <span class="code-type">int</span> newThreshold = newThresholdStr.<span class="code-function">toInt</span>();
+    
+    <span class="code-keyword">if</span> (newThreshold > <span class="code-number">0</span> && newThreshold &lt;= <span class="code-number">1023</span>) {
+      gasThreshold = newThreshold;
+      EEPROM.<span class="code-function">put</span>(eepromAddress, gasThreshold);
+      EEPROM.<span class="code-function">commit</span>(); 
+      Serial.<span class="code-function">print</span>(<span class="code-string">"New threshold set and saved: "</span>);
+      Serial.<span class="code-function">println</span>(gasThreshold);
+      lcd.<span class="code-function">clear</span>();
+      lcd.<span class="code-function">print</span>(<span class="code-string">"Threshold Saved!"</span>);
+      lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+      lcd.<span class="code-function">print</span>(<span class="code-string">"New Value: "</span> + <span class="code-function">String</span>(gasThreshold));
+      <span class="code-function">delay</span>(<span class="code-number">2000</span>);
+    }
+  }
+  server.<span class="code-function">sendHeader</span>(<span class="code-string">"Location"</span>, <span class="code-string">"/"</span>);
+  server.<span class="code-function">send</span>(<span class="code-number">302</span>, <span class="code-string">"text/plain"</span>, <span class="code-string">"Redirecting..."</span>);
+}
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Slide 12: Core Feature: Web Configuration -->
+    <div class="slide" id="slide-12">
+        <h2 class="slide-title">Core Feature: Remote Web Configuration</h2>
+        <div class="content-area">
+            <div class="diagram-layout">
+                <div class="diagram-node">
+                    <div class="icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <h3>1. User</h3>
+                    <p>User connects to the ESP's IP address (e.g., 192.168.1.105) on their phone.</p>
+                </div>
+                <div class="diagram-arrow">
+                    <i class="fa-solid fa-wifi"></i>
+                    <code>HTTP GET /</code>
+                </div>
+                <div class="diagram-node">
+                    <div class="icon"><i class="fa-solid fa-microchip"></i></div>
+                    <h3>2. ESP8266</h3>
+                    <p>The `ESP8266WebServer` receives the request and serves the HTML/CSS page.</p>
+                </div>
+                <div class="diagram-arrow">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <code>HTTP POST /set</code>
+                </div>
+                <div class="diagram-node">
+                    <div class="icon"><i class="fa-solid fa-sd-card"></i></div>
+                    <h3>3. EEPROM</h3>
+                    <p>User submits a new threshold. The ESP saves it to EEPROM and reloads the page.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 13: Live Demonstration -->
+    <div class="slide" id="slide-13">
+        <h2 class="slide-title">Live Demonstration</h2>
+        <div class="content-area">
+            <div class="demo-layout">
+                <div class="demo-container">
+                    <div class="qr-placeholder">
+                        <img src="IMG/QR.png" alt="a QR code">
+                    </div>
+                    <div class="demo-text">
+                        <h3>Web Server Interface</h3>
+                        <p>1. Join WiFi: <code>MN Muthukad</code><br>2. Visit (from LCD): <code>192.168.1.105</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Core Feature: System Modularity -->
+    <div class="slide" id="slide-14">
+        <h2 class="slide-title">Core Feature: System Modularity</h2>
+        <div class="content-area">
+            <div class="table-layout">
+                <p style="margin-bottom: 2em;">The system is not hard-coded to one gas. By swapping the MQ sensor module, the entire system can be repurposed to detect other gases using the same hardware and software logic.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sensor Model</th>
+                            <th>Primary Gases Detected</th>
+                            <th>Common Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>MQ-6 (Used)</td>
+                            <td>LPG, Propane, Butane</td>
+                            <td>Kitchen LPG Leak</td>
+                        </tr>
+                        <tr>
+                            <td>MQ-4</td>
+                            <td>Methane (LNG), CNG</td>
+                            <td>Natural Gas Leak, CNG Vehicle</td>
+                        </tr>
+                        <tr>
+                            <td>MQ-8</td>
+                            <td>Hydrogen (H2)</td>
+                            <td>Hydrogen Fuel Cells, Battery Labs</td>
+                        </tr>
+                        <tr>
+                            <td>MQ-2</td>
+                            <td>LPG, Methane, Hydrogen, Smoke</td>
+                            <td>General-Purpose Flammable Gas</td>
+                        </tr>
+                        <tr>
+                            <td>MQ-7</td>
+                            <td>Carbon Monoxide (CO)</td>
+                            <td>Heater/Boiler Fume Detector</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 15: Results & Discussion -->
+    <div class="slide" id="slide-15">
+        <h2 class="slide-title">Results & Discussion: Sensor Stability</h2>
+        <div class="content-area">
+            <div class="results-graph-layout">
+                <div>
+                    <h3>Why Averaging Matters</h3>
+                    <p>The `getStableSensorValue()` function is critical.</p>
+                    <ul>
+                        <li>**Raw Signal (Red):** The raw sensor data is "noisy" and has random spikes. If we used this, we would get constant false alarms.</li>
+                        <li>**Averaged Signal (Green):** By averaging 20 readings, we get a smooth, stable line that represents the *true* gas level, ensuring the alarm only triggers when necessary.</li>
+                    </ul>
+                </div>
+                <div class="graph-placeholder">
+                    <img src="IMG/G.png" alt="Image of graph showing noisy vs averaged sensor data">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 16: Conclusion -->
+    <div class="slide" id="slide-16">
+        <h2 class="slide-title">Conclusion</h2>
+        <div class="content-area">
+            <div class="bullet-list" style="max-width: 100em;">
+                <ul>
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        <strong>Successfully Implemented:</strong> The project is a successful demonstration of a robust, user-configurable IoT safety device.
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-star"></i>
+                        <strong>Superior to Traditional Detectors:</strong> It successfully integrates hardware, a web-based UI, and cloud notifications into a single, cohesive system.
+                    </li>
+                     <li>
+                        <i class="fa-solid fa-box-open"></i>
+                        <strong>Flexible & Scalable:</strong> The modular design makes it a flexible and expandable platform for a wide range of environmental safety applications.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Future Work -->
+    <div class="slide" id="slide-17">
+        <h2 class="slide-title">Future Work</h2>
+        <div class="content-area">
+            <div class="bullet-list" style="max-width: 100em;">
+                <ul>
+                    <li>
+                        <i class="fa-solid fa-sitemap"></i>
+                        <strong>Multi-Sensor Support:</strong> Implement an analog multiplexer (e.g., 74HC4051) to read from and manage up to 8 different sensors simultaneously.
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <strong>Enhance Security:</strong> Implement proper SSL certificate validation to remove the need for `client.setInsecure()`.
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-chart-line"></i>
+                        <strong>Data Logging & Analysis:</strong> Log sensor data to a remote database (e.g., InfluxDB or Google Sheets) for historical trend analysis.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Q&A -->
+    <div class="slide" id="slide-18">
+        <div class="qa-layout">
+            <h2>Thank You</h2>
+        </div>
+        <div class="q">
+            <img src="IMG/Screenshot 2025-11-18 160104.png" alt="Image of graph showing noisy vs averaged sensor data">
+        </div>
+    </div>
+
+
+    <!-- Navigation Controls -->
+    <div id="slide-footer">IoT Gas Alert System | Slide 1 / 18</div>
+    <div class="nav-controls">
+        <button id="fullscreen-btn" title="Fullscreen (F)"><i class="fa-solid fa-expand"></i></button>
+        <button id="prev-btn" title="Previous (Left Arrow)"><i class="fa-solid fa-arrow-left"></i></button>
+        <button id="next-btn" title="Next (Right Arrow)"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Elements ---
+        const container = document.getElementById('presentation-container');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const fsBtn = document.getElementById('fullscreen-btn');
+        const footer = document.getElementById('slide-footer');
+        
+        // --- State ---
+        const totalSlides = slides.length; // This will now be 18
+        let currentSlide = 0;
+        let inactivityTimer;
+
+        // --- DYNAMIC FONT SCALING ---
+        function scaleTypography() {
+            const containerWidth = container.clientWidth;
+            // Base font size = 10px at 1280px width
+            // (1280px / 128 = 10px)
+            // This creates a scalable unit for all 'em' values.
+            const baseFontSize = containerWidth / 128.0; 
+            container.style.fontSize = `${baseFontSize}px`;
+        }
+
+        // --- Functions ---
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            updateControls();
+            showControls();
+        }
+
+        function updateControls() {
+            footer.textContent = `IoT Gas Alert System | Slide ${currentSlide + 1} / ${totalSlides}`;
+            prevBtn.disabled = (currentSlide === 0);
+            nextBtn.disabled = (currentSlide === totalSlides - 1);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+                });
+            } else {
+                 document.exitFullscreen();
+            }
+            showControls();
+        }
+
+        function showControls() {
+            container.classList.remove('controls-hidden');
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                container.classList.add('controls-hidden');
+            }, 3000);
+        }
+
+        // --- Event Listeners ---
+        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+        nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        document.addEventListener('keydown', (e) => {
+            showControls();
+            const isRight = (e.key === 'ArrowRight' || e.keyCode === 39 || e.key === ' ');
+            const isLeft = (e.key === 'ArrowLeft' || e.keyCode === 37);
+            const isFullscreenKey = (e.key === 'f' || e.key === 'F');
+
+            if (isRight) showSlide(currentSlide + 1);
+            else if (isLeft) showSlide(currentSlide - 1);
+            else if (isFullscreenKey) {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            const icon = fsBtn.querySelector('i');
+            if (document.fullscreenElement) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+                fsBtn.title = "Exit Fullscreen (F)";
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                fsBtn.title = "Fullscreen (F)";
+            }
+        });
+
+        container.addEventListener('mousemove', showControls);
+        
+        // --- Resize Observer ---
+        // Use ResizeObserver to scale fonts whenever the container size changes
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.target === container) {
+                    scaleTypography();
+                }
+            }
+        });
+
+        // Initial setup
+        resizeObserver.observe(container); // Start observing
+        showSlide(0);
+        showControls();
+    });
+</script>
+
+</body>
+</html>
